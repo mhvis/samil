@@ -51,7 +51,6 @@ func listen() (*net.TCPConn, error) {
 	return listener.AcceptTCP()
 }
 
-
 func advertise() error {
 	socket, err := net.DialUDP("udp4", nil, &net.UDPAddr{net.IPv4bcast, 1300})
 	if err != nil {
@@ -61,8 +60,6 @@ func advertise() error {
 	socket.Close()
 	return err
 }
-
-
 
 /*
 def _tear_down_response(data):
