@@ -5,11 +5,13 @@ import (
 )
 
 const (
+	// Operating modes.
 	ModeWait       = 0
 	ModeNormal     = 1
 	ModePVPowerOff = 5
 )
 
+// InverterData stores generation data from the inverter.
 type InverterData struct {
 	// Internal temperature in decicelcius (375 = 37.5 degrees Celcius)
 	InternalTemperature int

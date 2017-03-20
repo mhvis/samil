@@ -7,6 +7,11 @@ import (
 	"net"
 )
 
+// Samil maintains a connection to an inverter.
+//
+// Connections are usually closed by the inverter after 20 seconds of
+// inactivity. When a connection is closed, subsequent API calls will return the
+// error EOF.
 type Samil struct {
 	conn   net.Conn
 	read   chan message
