@@ -13,7 +13,7 @@ const (
 
 // InverterData stores generation data from the inverter.
 type InverterData struct {
-	// Internal temperature in decicelcius (375 = 37.5 degrees Celcius)
+	// Internal temperature in decicelcius (375 = 37.5 degrees Celsius)
 	InternalTemperature int
 	// PV1 voltage in decivolts (2975 = 297.5 V)
 	PV1Voltage int

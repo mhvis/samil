@@ -35,7 +35,10 @@ func connect() (*net.TCPConn, error) {
 
 // Listens for incoming connections with a deadline of a minute.
 func listen() (*net.TCPConn, error) {
-	listener, err := net.ListenTCP("tcp4", &net.TCPAddr{net.IPv4zero, 1200, ""})
+	listener, err := net.ListenTCP("tcp4", &net.TCPAddr{
+		IP:   net.IPv4zero,
+		Port: 1200,
+	})
 	if err != nil {
 		return nil, err
 	}
@@ -49,7 +52,10 @@ func listen() (*net.TCPConn, error) {
 
 // Advertises the existence of this client.
 func advertise() error {
-	socket, err := net.DialUDP("udp4", nil, &net.UDPAddr{net.IPv4bcast, 1300, ""})
+	socket, err := net.DialUDP("udp4", nil, &net.UDPAddr{
+		IP:   net.IPv4bcast,
+		Port: 1300,
+	})
 	if err != nil {
 		return err
 	}
