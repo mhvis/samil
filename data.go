@@ -4,9 +4,8 @@ import (
 	"encoding/binary"
 )
 
+// Possible operating modes returned by the inverter.
 const (
-	// ModeWait and others indicate possible operating modes returned by the
-	// inverter.
 	ModeWait       = 0
 	ModeNormal     = 1
 	ModePVPowerOff = 5
