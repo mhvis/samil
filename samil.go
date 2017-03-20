@@ -8,16 +8,15 @@ import (
 )
 
 type Samil struct {
-	conn *net.TCPConn
-
-	//readErr chan error
-	//readMsg chan []byte
+	conn   net.Conn
+	read   chan message
+	closed *error
 }
 
 // NewConnection searches for an inverter in the network and returns the
 // connection if one is found.
 //
-// Inverters that are connected already to a client will not initiate a new
+// Inverters that are already connected to a client will not initiate a new
 // connection. Therefore calling this function multiple times while leaving the
 // connections open will connect to different inverters.
 func NewConnection() (Samil, error) {
@@ -25,23 +24,33 @@ func NewConnection() (Samil, error) {
 	if err != nil {
 		return Samil{}, err
 	}
-	return Samil{conn}, nil
+	s := Samil{conn, make(chan message, 5), &err}
+	go s.readRoutine()
+	return s, nil
 }
 
-// ModelInfo.
-func (s Samil) ModelInfo() error {
+// ModelInfo requests and returns a string with model information.
+// This API will change.
+func (s Samil) ModelInfo() (string, error) {
+	if *s.closed != nil {
+		return "", *s.closed
+	}
 	_, err := s.conn.Write(modelInfo)
-	return err
+	if err != nil {
+		return "", err
+	}
+	payload, err := s.readFor(func(header [3]byte, end [2]byte) bool {
+		return header == [3]byte{1, 131, 0}
+	})
+	return string(payload), err
 }
 
-// Status.
-func (s Samil) Status() error {
-	_, err := s.conn.Write(data)
-	return err
-}
-
+// History requests and returns history data. Not yet implemented.
 func (s Samil) History() error {
-	panic("")
+	if *s.closed != nil {
+		return *s.closed
+	}
+	panic("Not yet implemented")
 }
 
 // RemoteAddr returns the remote network address. The Addr returned is shared by
