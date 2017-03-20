@@ -2,6 +2,9 @@
 
 Go library and command-line interface for Samil Power inverters.
 
+[![GoDoc](https://godoc.org/github.com/mhvis/samil?status.svg)](https://godoc.org/github.com/mhvis/samil)
+[![Go Report Card](https://goreportcard.com/badge/github.com/mhvis/samil)](https://goreportcard.com/report/github.com/mhvis/samil)
+
 ## Supported inverters
 
 Those that work with SolarPower Browser:
