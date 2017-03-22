@@ -1,6 +1,7 @@
 // Package samil provides an API for quering networked Samil Power inverters.
 // Supported inverters are those that work with SolarPower Browser.
 // These are: SolarRiver TD, SolarRiver TL-D and SolarLake TL inverters.
+// It is only tested and confirmed for SolarRiver 4500TL-D.
 package samil
 
 import (
@@ -32,30 +33,6 @@ func NewConnection() (Samil, error) {
 	s := Samil{conn, make(chan message, 5), &err}
 	go s.readRoutine()
 	return s, nil
-}
-
-// ModelInfo requests and returns a string with model information.
-// This API will change.
-func (s Samil) ModelInfo() (string, error) {
-	if *s.closed != nil {
-		return "", *s.closed
-	}
-	_, err := s.conn.Write(modelInfo)
-	if err != nil {
-		return "", err
-	}
-	payload, err := s.readFor(func(header [3]byte, end [2]byte) bool {
-		return header == [3]byte{1, 131, 0}
-	})
-	return string(payload), err
-}
-
-// History requests and returns history data. Not yet implemented.
-func (s Samil) History() error {
-	if *s.closed != nil {
-		return *s.closed
-	}
-	panic("Not yet implemented")
 }
 
 // RemoteAddr returns the remote network address. The Addr returned is shared by
