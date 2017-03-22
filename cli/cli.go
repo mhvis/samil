@@ -12,4 +12,6 @@ func main() {
 	fmt.Println("connected to:", s.Samil.RemoteAddr())
 	fmt.Println("model info:", s.ModelInfo())
 	fmt.Printf("data: %+v\n", s.Data())
+	fmt.Println("history")
+	s.History(17,17)
 }
