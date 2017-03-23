@@ -1,7 +1,6 @@
 package samil
 
 import (
-	"time"
 )
 
 // History requests and returns history data in the time period provided.
