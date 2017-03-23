@@ -16,13 +16,9 @@ func (s Samil) History(start, end int) error {
 	if err != nil {
 		return err
 	}
-	/*
-		payload, err := s.readData()
-		if err != nil {
-			return InverterData{}, err
-		}
-		return dataFrom(payload), nil
-	*/
-	time.Sleep(1 * time.Hour)
-	panic("Not yet implemented")
+	// Read until EOF
+	_, err = s.readFor(func (header [3]byte) bool {
+		return false
+	})
+	return err
 }
