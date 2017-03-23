@@ -41,7 +41,7 @@ func (s Samil) ModelInfo() (ModelInfo, error) {
 	if err != nil {
 		return ModelInfo{}, err
 	}
-	payload, err := s.readFor(func(header [3]byte, end [2]byte) bool {
+	payload, err := s.readFor(func(header [3]byte) bool {
 		return header == [3]byte{1, 131, 0}
 	})
 	if err != nil {

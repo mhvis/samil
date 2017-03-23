@@ -64,7 +64,7 @@ func (s Samil) Data() (InverterData, error) {
 
 // Returns the next data message from the socket.
 func (s Samil) readData() ([]byte, error) {
-	return s.readFor(func(header [3]byte, end [2]byte) bool {
+	return s.readFor(func(header [3]byte) bool {
 		return header[0] == 1 && header[1] == 130
 	})
 }

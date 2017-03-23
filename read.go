@@ -8,18 +8,17 @@ import (
 type message struct {
 	header  [3]byte
 	payload []byte
-	end     [2]byte
 }
 
 // Reads next messages until the condition holds, returns that message.
-// The header and end of message is passed to the condition function.
-func (s Samil) readFor(hold func([3]byte, [2]byte) bool) ([]byte, error) {
+// The header of message is passed to the condition function.
+func (s Samil) readFor(hold func([3]byte) bool) ([]byte, error) {
 	for {
 		msg, ok := <-s.read
 		if !ok {
 			return nil, *s.closed
 		}
-		if hold(msg.header, msg.end) {
+		if hold(msg.header) {
 			return msg.payload, nil
 		}
 	}
@@ -46,8 +45,8 @@ func (s Samil) readNext() (msg message, err error) {
 	if err != nil {
 		return
 	}
-	if start[0] != 85 || start[1] != 170 {
-		panic("Invalid message, not starting with 85 170 bytes")
+	if start[0] != 0x55 || start[1] != 0xaa {
+		panic("Invalid message, not starting with 55 aa bytes")
 	}
 	_, err = io.ReadFull(s.conn, msg.header[:])
 	if err != nil {
@@ -64,6 +63,14 @@ func (s Samil) readNext() (msg message, err error) {
 	if err != nil {
 		return
 	}
-	_, err = io.ReadFull(s.conn, msg.end[:])
+	chksumBytes := make([]byte, 2)
+	_, err = io.ReadFull(s.conn, chksumBytes)
+	if err != nil {
+		return
+	}
+	chksum := int(binary.BigEndian.Uint16(chksumBytes))
+	if chksum != checksum(start) + checksum(msg.header[:]) + checksum(sizeBytes) + checksum(msg.payload) {
+		panic("Invalid message, incorrect checksum")
+	}
 	return
 }

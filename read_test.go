@@ -30,10 +30,6 @@ func TestReadNext(t *testing.T) {
 	if !bytes.Equal(payloadExpect, msg.payload) {
 		t.Errorf("Incorrect payload, expected %v, got %v", payloadExpect, msg.payload)
 	}
-	endExpect := [2]byte{4, 126}
-	if endExpect != msg.end {
-		t.Errorf("Incorrect end, expected %v, got %v", endExpect, msg.end)
-	}
 }
 
 func samilClient() (s Samil, c net.Conn) {

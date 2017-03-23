@@ -12,7 +12,7 @@ func (s Samil) History(start, end int) error {
 	if *s.closed != nil {
 		return *s.closed
 	}
-	_, err := s.conn.Write(historyRequest(start, end))
+	_, err := s.conn.Write(historyPacket(start, end))
 	if err != nil {
 		return err
 	}
