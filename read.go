@@ -79,7 +79,7 @@ func (s *Samil) readNext() (msg message, err error) {
 		return
 	}
 	chksum := int(binary.BigEndian.Uint16(chksumBytes))
-	if chksum != checksum(start) + checksum(msg.header[:]) + checksum(sizeBytes) + checksum(msg.payload) {
+	if chksum != checksum(start)+checksum(msg.header[:])+checksum(sizeBytes)+checksum(msg.payload) {
 		panic("Invalid message, incorrect checksum")
 	}
 	return

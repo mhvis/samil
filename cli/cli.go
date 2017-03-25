@@ -10,8 +10,8 @@ func main() {
 	fmt.Println("searching for inverter")
 	s := newConnection()
 	fmt.Println("connected to:", s.Samil.RemoteAddr())
-	fmt.Println("model info:", s.ModelInfo())
-	fmt.Printf("data: %+v\n", s.Data())
-	fmt.Println("history")
-	s.History(17,17)
+	fmt.Printf("model: %+v\n", *s.Model())
+	fmt.Printf("data: %+v\n", *s.Data())
+	//fmt.Println("history")
+	//s.History(17,17)
 }

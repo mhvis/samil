@@ -8,36 +8,35 @@ import (
 
 // samilHandler is a layer over the Samil type that handles errors by exiting.
 type samilHandler struct {
-	samil.Samil
+	*samil.Samil
 }
 
-func (h samilHandler) ModelInfo() samil.ModelInfo {
-	modelInfo, err := h.Samil.ModelInfo()
-	h.handle(err, "model info")
-	return modelInfo
+func (h samilHandler) Model() *samil.Model {
+	model, err := h.Samil.Model()
+	handleError(err, "model")
+	return model
 }
 
-func (h samilHandler) Data() samil.InverterData {
+func (h samilHandler) Data() *samil.Data {
 	data, err := h.Samil.Data()
-	h.handle(err, "data")
+	handleError(err, "data")
 	return data
 }
 
 func (h samilHandler) History(start, end int) {
 	err := h.Samil.History(start, end)
-	h.handle(err, "history")
+	handleError(err, "history")
 	return
 }
 
 func newConnection() samilHandler {
 	s, err := samil.NewConnection()
-	h := samilHandler{s}
-	h.handle(err, "search")
-	return h
+	handleError(err, "search")
+	return samilHandler{s}
 }
 
-// Prints error, closes socket and exits.
-func (h samilHandler) handle(err error, action string) {
+// Prints error and exits (sockets are automatically closed on exit).
+func handleError(err error, action string) {
 	if err == nil {
 		return
 	}

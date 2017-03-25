@@ -6,9 +6,12 @@ import (
 
 // Possible operating modes returned by the inverter.
 const (
-	ModeWait       = 0
-	ModeNormal     = 1
-	ModePVPowerOff = 5
+	Wait           = 0
+	Normal         = 1
+	Fault          = 2
+	PermanentFault = 3
+	Check          = 4
+	PVPowerOff     = 5
 )
 
 // Data stores generation and operational data from the inverter.
@@ -19,13 +22,13 @@ type Data struct {
 	PV1Voltage int
 	// PV2 voltage in decivolts
 	PV2Voltage int
-	// PV1 current in deciampère
+	// PV1 current in deciampere
 	PV1Current int
-	// PV2 current in deciampère
+	// PV2 current in deciampere
 	PV2Current int
 	// Total operation time in hours
 	OperationTime int
-	// Operating mode, 0=wait, 1=normal, 5=PV power off (?)
+	// Operating mode, see constants for possible values
 	OperatingMode int
 	// Energy produced today in decawatt hour (474 = 4.74 kWh)
 	EnergyToday int
@@ -33,7 +36,7 @@ type Data struct {
 	PV1Power int
 	// PV2 input power in watt
 	PV2Power int
-	// Single phase grid current in deciampère
+	// Single phase grid current in deciampere
 	GridCurrent int
 	// Grid voltage in decivolts
 	GridVoltage int
@@ -46,7 +49,7 @@ type Data struct {
 }
 
 // Data requests current data values from the inverter and returns them in the
-// InverterData struct.
+// Data struct.
 func (s *Samil) Data() (*Data, error) {
 	err := s.write(data)
 	if err != nil {
@@ -72,30 +75,40 @@ func dataFrom(payload []byte) *Data {
 		panic("Unexpected data length")
 	}
 	return &Data{
-		InternalTemperature: intFrom(payload[0:2]),
-		PV1Voltage:          intFrom(payload[2:4]),
-		PV2Voltage:          intFrom(payload[4:6]),
-		PV1Current:          intFrom(payload[6:8]),
-		PV2Current:          intFrom(payload[8:10]),
-		OperationTime:       intFrom(payload[12:14]),
-		OperatingMode:       intFrom(payload[14:16]),
-		EnergyToday:         intFrom(payload[16:18]),
-		PV1Power:            intFrom(payload[38:40]),
-		PV2Power:            intFrom(payload[40:42]),
-		GridCurrent:         intFrom(payload[42:44]),
-		GridVoltage:         intFrom(payload[44:46]),
-		GridFrequency:       intFrom(payload[46:48]),
-		OutputPower:         intFrom(payload[48:50]),
-		EnergyTotal:         intFrom(payload[50:54]),
+		InternalTemperature: intFrom(payload[0:2], true),
+		PV1Voltage:          intFrom(payload[2:4], false),
+		PV2Voltage:          intFrom(payload[4:6], false),
+		PV1Current:          intFrom(payload[6:8], false),
+		PV2Current:          intFrom(payload[8:10], false),
+		OperationTime:       intFrom(payload[10:14], false),
+		OperatingMode:       intFrom(payload[14:16], false),
+		EnergyToday:         intFrom(payload[16:18], false),
+		PV1Power:            intFrom(payload[38:40], false),
+		PV2Power:            intFrom(payload[40:42], false),
+		GridCurrent:         intFrom(payload[42:44], false),
+		GridVoltage:         intFrom(payload[44:46], false),
+		GridFrequency:       intFrom(payload[46:48], false),
+		OutputPower:         intFrom(payload[48:50], false),
+		EnergyTotal:         intFrom(payload[50:54], false),
 	}
 }
 
-func intFrom(b []byte) int {
+func intFrom(b []byte, signed bool) int {
 	switch len(b) {
 	case 2:
-		return int(binary.BigEndian.Uint16(b))
+		i := binary.BigEndian.Uint16(b)
+		if signed {
+			return int(int16(i))
+		} else {
+			return int(i)
+		}
 	case 4:
-		return int(binary.BigEndian.Uint32(b))
+		i := binary.BigEndian.Uint32(b)
+		if signed {
+			return int(int32(i))
+		} else {
+			return int(i)
+		}
 	default:
 		panic("Invalid integer byte sequence encoding, incorrect length")
 	}

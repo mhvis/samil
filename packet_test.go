@@ -1,8 +1,8 @@
 package samil
 
 import (
-	"testing"
 	"bytes"
+	"testing"
 )
 
 func TestChecksum(t *testing.T) {

@@ -1,13 +1,18 @@
 package samil
 
 import (
+	"strconv"
 	"strings"
 )
 
 // Device type values.
 const (
 	SinglePhaseInverter = 1
-	
+	ThreePhaseInverter  = 2
+	SolarEnviMonitor    = 3
+	RPhaseInverter      = 4
+	SPhaseInverter      = 5
+	TPhaseInverter      = 6
 )
 
 // Model stores model and version information.
@@ -52,16 +57,41 @@ func (s *Samil) Model() (*Model, error) {
 
 // Converts payload to Model struct.
 func modelFrom(payload []byte) *Model {
-	str := string(payload)
-	return &Model{
-		DeviceType:           int(payload[0]),
-		VARating:             strings.TrimSpace(str[1:7]),
-		FirmwareVersion:      str[7:12],
-		ModelName:            str[12:26],
-		Manufacturer:         str[28:38],
-		SerialNumber:         str[44:54],
-		CommunicationVersion: str[60:65],
-		OtherVersion:         str[65:70],
-		General:              int(payload[70]),
+	if len(payload) != 71 {
+		panic("Invalid model payload length")
 	}
+	return &Model{
+		DeviceType:           atoi(string(payload[0:1])),
+		VARating:             stringFrom(payload[1:7]),
+		FirmwareVersion:      stringFrom(payload[7:12]),
+		ModelName:            stringFrom(payload[12:28]),
+		Manufacturer:         stringFrom(payload[28:44]),
+		SerialNumber:         stringFrom(payload[44:60]),
+		CommunicationVersion: stringFrom(payload[60:65]),
+		OtherVersion:         stringFrom(payload[65:70]),
+		General:              atoi(string(payload[70:71])),
+	}
+}
+
+func atoi(s string) int {
+	i, err := strconv.Atoi(s)
+	if err != nil {
+		panic("Invalid byte in model payload: " + err.Error())
+	}
+	return i
+}
+
+// Converts and trims cstring
+func stringFrom(b []byte) string {
+	return strings.TrimSpace(string(b[:clen(b)]))
+}
+
+// Length of a cstring
+func clen(n []byte) int {
+	for i := 0; i < len(n); i++ {
+		if n[i] == 0 {
+			return i
+		}
+	}
+	return len(n)
 }

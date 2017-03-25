@@ -15,7 +15,7 @@ import (
 // error EOF.
 type Samil struct {
 	conn   net.Conn
-	in   chan message // Buffer for incoming messages
+	in     chan message // Buffer for incoming messages
 	closed error
 }
 
@@ -25,6 +25,9 @@ type Samil struct {
 // Inverters that are already connected to a client will not initiate a new
 // connection. Therefore calling this function multiple times while leaving the
 // connections open will connect to different inverters.
+//
+// The search will return with an i/o timeout error when no inverter is found
+// after a minute.
 func NewConnection() (*Samil, error) {
 	conn, err := connect()
 	if err != nil {
