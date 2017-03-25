@@ -7,12 +7,13 @@ Go library and command-line interface for Samil Power inverters.
 
 ## Supported inverters
 
-Those that work with SolarPower Browser:
+Those that work with SolarPower Browser V3:
 * SolarRiver TD series
 * SolarRiver TL-D series
 * SolarLake TL series
 
-### Confirmed
+**Confirmed**
+
 * SolarRiver 4500 TL-D
 * SolarRiver 5200 TL-D
 
@@ -22,6 +23,10 @@ Those that work with SolarPower Browser:
 * Request model information (TODO)
 * Request history values (TODO)
 * Command-line interface (TODO)
+
+## Usage
+
+See [GoDoc](https://godoc.org/github.com/mhvis/samil).
 
 ## License
 
