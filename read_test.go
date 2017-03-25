@@ -32,8 +32,8 @@ func TestReadNext(t *testing.T) {
 	}
 }
 
-func samilClient() (s Samil, c net.Conn) {
+func samilClient() (s *Samil, c net.Conn) {
 	c, c2 := net.Pipe()
-	s.conn = c2
+	s = &Samil{conn: c2}
 	return
 }

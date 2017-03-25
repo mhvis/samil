@@ -8,7 +8,7 @@ func TestDataFromPayload(t *testing.T) {
 	payload := []byte{1, 119, 11, 163, 11, 243, 0, 21, 0, 20, 0, 0, 40, 64, 0,
 		1, 1, 218, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 		2, 138, 2, 114, 0, 55, 9, 20, 19, 134, 4, 245, 0, 1, 177, 204}
-	expect := InverterData{
+	expect := Data{
 		InternalTemperature: 375,
 		PV1Voltage:          2979,
 		PV2Voltage:          3059,
@@ -26,7 +26,7 @@ func TestDataFromPayload(t *testing.T) {
 		EnergyTotal:         111052,
 	}
 	data := dataFrom(payload)
-	if expect != data {
-		t.Errorf("Incorrect data from payload, expected %v, got %v", expect, data)
+	if expect != *data {
+		t.Errorf("Incorrect data from payload, expected %v, got %v", expect, *data)
 	}
 }

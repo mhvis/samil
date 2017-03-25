@@ -10,36 +10,46 @@ type message struct {
 	payload []byte
 }
 
-// Reads next messages until the condition holds, returns that message.
-// The header of message is passed to the condition function.
-func (s Samil) readFor(hold func([3]byte) bool) ([]byte, error) {
+// Returns payload of the next message for which the condition function holds.
+// The header of a message is passed to the condition function.
+func (s *Samil) readFor(hold func([3]byte) bool) ([]byte, error) {
+	var msg message
+	var err error
 	for {
-		msg, ok := <-s.read
-		if !ok {
-			return nil, *s.closed
-		}
-		if hold(msg.header) {
-			return msg.payload, nil
+		msg, err = s.read()
+		if err != nil || hold(msg.header) {
+			return msg.payload, err
 		}
 	}
 }
 
-// Reads continuously, closes the connection at EOF and sets closed error flag.
+// Returns next (buffered) message.
+func (s *Samil) read() (message, error) {
+	msg, ok := <-s.in
+	if !ok {
+		return message{}, s.closed
+	}
+	return msg, nil
+}
+
+// Read routine to be run as separate goroutine for processing and buffering messages.
+// Use read() or readFor() to read buffered messages.
+// Closes the connection at EOF and sets closed error flag.
 func (s *Samil) readRoutine() {
 	defer s.conn.Close()
 	for {
 		msg, err := s.readNext()
 		if err != nil {
-			*s.closed = err
-			close(s.read)
+			s.closed = err
+			close(s.in)
 			return
 		}
-		s.read <- msg
+		s.in <- msg
 	}
 }
 
-// Reads next incoming message.
-func (s Samil) readNext() (msg message, err error) {
+// Reads next incoming message, used in the read routine.
+func (s *Samil) readNext() (msg message, err error) {
 	start := make([]byte, 2)
 	_, err = io.ReadFull(s.conn, start)
 	if err != nil {

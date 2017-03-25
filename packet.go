@@ -6,7 +6,7 @@ import (
 
 var advertisement = forgePacket([3]byte{0, 64, 2}, []byte("I AM SERVER"))
 
-var modelInfo = forgePacket([3]byte{1, 3, 2}, nil)
+var model = forgePacket([3]byte{1, 3, 2}, nil)
 
 var data = forgePacket([3]byte{1, 2, 2}, nil)
 

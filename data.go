@@ -11,8 +11,8 @@ const (
 	ModePVPowerOff = 5
 )
 
-// InverterData stores generation data from the inverter.
-type InverterData struct {
+// Data stores generation and operational data from the inverter.
+type Data struct {
 	// Internal temperature in decicelcius (375 = 37.5 degrees Celsius)
 	InternalTemperature int
 	// PV1 voltage in decivolts (2975 = 297.5 V)
@@ -47,34 +47,31 @@ type InverterData struct {
 
 // Data requests current data values from the inverter and returns them in the
 // InverterData struct.
-func (s Samil) Data() (InverterData, error) {
-	if *s.closed != nil {
-		return InverterData{}, *s.closed
-	}
-	_, err := s.conn.Write(data)
+func (s *Samil) Data() (*Data, error) {
+	err := s.write(data)
 	if err != nil {
-		return InverterData{}, err
+		return nil, err
 	}
 	payload, err := s.readData()
 	if err != nil {
-		return InverterData{}, err
+		return nil, err
 	}
 	return dataFrom(payload), nil
 }
 
 // Returns the next data message from the socket.
-func (s Samil) readData() ([]byte, error) {
+func (s *Samil) readData() ([]byte, error) {
 	return s.readFor(func(header [3]byte) bool {
-		return header[0] == 1 && header[1] == 130
+		return header[0] == 1 && header[1] == 0x82
 	})
 }
 
-// Payload to InverterData struct.
-func dataFrom(payload []byte) InverterData {
+// Payload to Data struct.
+func dataFrom(payload []byte) *Data {
 	if len(payload) != 54 {
 		panic("Unexpected data length")
 	}
-	return InverterData{
+	return &Data{
 		InternalTemperature: intFrom(payload[0:2]),
 		PV1Voltage:          intFrom(payload[2:4]),
 		PV2Voltage:          intFrom(payload[4:6]),
