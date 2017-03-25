@@ -1,7 +1,5 @@
 package samil
 
-import ()
-
 // History requests and returns history data in the time period provided.
 // The time period is provided as two integers for the last digits of the start
 // and end year. E.g. start=7 and end=10 are for 2007 and 2010.

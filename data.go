@@ -99,16 +99,14 @@ func intFrom(b []byte, signed bool) int {
 		i := binary.BigEndian.Uint16(b)
 		if signed {
 			return int(int16(i))
-		} else {
-			return int(i)
 		}
+		return int(i)
 	case 4:
 		i := binary.BigEndian.Uint32(b)
 		if signed {
 			return int(int32(i))
-		} else {
-			return int(i)
 		}
+		return int(i)
 	default:
 		panic("Invalid integer byte sequence encoding, incorrect length")
 	}
