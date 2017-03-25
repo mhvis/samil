@@ -20,7 +20,7 @@ Those that work with SolarPower Browser V3:
 ## Features
 
 * Request data values (e.g. current output power, daily energy)
-* Request model information (TODO)
+* Request model information (e.g. model name, serial number)
 * Request history values (TODO)
 * Command-line interface (TODO)
 
