@@ -15,9 +15,11 @@ func main() {
 	fmt.Printf("data: %+v\n", *s.Data())
 	fmt.Println("history")
 	c := make(chan samil.HistoryDay, 1)
+	go func() {
+		for d := range c {
+			fmt.Printf("%v/%v/%v\n", d.Month, d.Day, d.Year)
+			fmt.Println(d.Value)
+		}
+	}()
 	s.History(17, 17, c)
-	for d := range c {
-		fmt.Printf("%v/%v/%v\n", d.Month, d.Day, d.Year)
-		fmt.Println(d.Value)
-	}
 }
