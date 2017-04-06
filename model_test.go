@@ -17,9 +17,12 @@ func TestModelInfoFromPayload(t *testing.T) {
 		OtherVersion:         "V1.30",
 		General:              2,
 	}
-	model := modelFrom(payload)
+	model, err := modelFrom(payload)
+	if err != nil {
+		t.Errorf("unexpected error response: %v", err)
+	}
 	if expect != *model {
-		t.Errorf("Incorrect model from payload, expected %v, got %v", expect, *model)
+		t.Errorf("incorrect model from payload, expected %v, got %v", expect, *model)
 	}
 
 }

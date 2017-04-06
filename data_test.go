@@ -38,9 +38,12 @@ func TestDataFromPayload(t *testing.T) {
 		OutputPower:         1269,
 		EnergyTotal:         111052,
 	}
-	data := dataFrom(payload)
+	data, err := dataFrom(payload)
+	if err != nil {
+		t.Errorf("unexpected error response: %v", err)
+	}
 	if expect != *data {
-		t.Errorf("Incorrect data from payload, expected %v, got %v", expect, *data)
+		t.Errorf("incorrect data from payload, expected %v, got %v", expect, *data)
 	}
 }
 
@@ -57,6 +60,6 @@ func TestIntFrom(t *testing.T) {
 
 func assertInt(t *testing.T, expected, actual int) {
 	if expected != actual {
-		t.Errorf("Incorrect int, expected %v, got %v", expected, actual)
+		t.Errorf("incorrect int, expected %v, got %v", expected, actual)
 	}
 }

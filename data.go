@@ -2,6 +2,7 @@ package samil
 
 import (
 	"encoding/binary"
+	"fmt"
 )
 
 // Possible operating modes returned by the inverter.
@@ -59,7 +60,7 @@ func (s *Samil) Data() (*Data, error) {
 	if err != nil {
 		return nil, err
 	}
-	return dataFrom(payload), nil
+	return dataFrom(payload)
 }
 
 // Returns the next data message from the socket.
@@ -70,9 +71,10 @@ func (s *Samil) readData() ([]byte, error) {
 }
 
 // Payload to Data struct.
-func dataFrom(payload []byte) *Data {
+func dataFrom(payload []byte) (*Data, error) {
 	if len(payload) != 54 {
-		panic("Unexpected data length")
+		return nil, fmt.Errorf("unexpected response: expected length 54, got %v",
+			len(payload))
 	}
 	return &Data{
 		InternalTemperature: intFrom(payload[0:2], true),
@@ -90,7 +92,7 @@ func dataFrom(payload []byte) *Data {
 		GridFrequency:       intFrom(payload[46:48], false),
 		OutputPower:         intFrom(payload[48:50], false),
 		EnergyTotal:         intFrom(payload[50:54], false),
-	}
+	}, nil
 }
 
 func intFrom(b []byte, signed bool) int {

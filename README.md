@@ -21,8 +21,8 @@ Those that work with SolarPower Browser V3:
 
 * Request data values (e.g. current output power, daily energy)
 * Request model information (e.g. model name, serial number)
-* Request history values (TODO)
-* Command-line interface (TODO)
+* Request history generation data
+* [Command-line interface](https://github.com/mhvis/samil/tree/master/cli)
 
 ## Usage
 

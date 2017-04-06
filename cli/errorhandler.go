@@ -23,8 +23,8 @@ func (h samilHandler) Data() *samil.Data {
 	return data
 }
 
-func (h samilHandler) History(start, end int) {
-	err := h.Samil.History(start, end)
+func (h samilHandler) History(start, end int, c chan samil.HistoryDay) {
+	err := h.Samil.History(start, end, c)
 	handleError(err, "history")
 	return
 }

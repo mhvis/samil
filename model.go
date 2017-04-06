@@ -1,6 +1,7 @@
 package samil
 
 import (
+	"fmt"
 	"strconv"
 	"strings"
 )
@@ -52,16 +53,26 @@ func (s *Samil) Model() (*Model, error) {
 	if err != nil {
 		return nil, err
 	}
-	return modelFrom(payload), nil
+	return modelFrom(payload)
 }
 
 // Converts payload to Model struct.
-func modelFrom(payload []byte) *Model {
+func modelFrom(payload []byte) (*Model, error) {
 	if len(payload) != 71 {
-		panic("Invalid model payload length")
+		return nil,
+			fmt.Errorf("unexpected response: expected length 71, got %v",
+				len(payload))
+	}
+	deviceType, err := strconv.Atoi(string(payload[0:1]))
+	if err != nil {
+		return nil, fmt.Errorf("unexpected response: %v", err)
+	}
+	general, err := strconv.Atoi(string(payload[70:71]))
+	if err != nil {
+		return nil, fmt.Errorf("unexpected response: %v", err)
 	}
 	return &Model{
-		DeviceType:           atoi(string(payload[0:1])),
+		DeviceType:           deviceType,
 		VARating:             stringFrom(payload[1:7]),
 		FirmwareVersion:      stringFrom(payload[7:12]),
 		ModelName:            stringFrom(payload[12:28]),
@@ -69,16 +80,8 @@ func modelFrom(payload []byte) *Model {
 		SerialNumber:         stringFrom(payload[44:60]),
 		CommunicationVersion: stringFrom(payload[60:65]),
 		OtherVersion:         stringFrom(payload[65:70]),
-		General:              atoi(string(payload[70:71])),
-	}
-}
-
-func atoi(s string) int {
-	i, err := strconv.Atoi(s)
-	if err != nil {
-		panic("Invalid byte in model payload: " + err.Error())
-	}
-	return i
+		General:              general,
+	}, nil
 }
 
 // Converts and trims cstring
