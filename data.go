@@ -51,14 +51,14 @@ type Data struct {
 
 // Data requests current data values from the inverter and returns them in the
 // Data struct.
-func (s *Samil) Data() (*Data, error) {
+func (s *Samil) Data() (Data, error) {
 	err := s.write(data)
 	if err != nil {
-		return nil, err
+		return Data{}, err
 	}
 	payload, err := s.readData()
 	if err != nil {
-		return nil, err
+		return Data{}, err
 	}
 	return dataFrom(payload)
 }
@@ -71,12 +71,12 @@ func (s *Samil) readData() ([]byte, error) {
 }
 
 // Payload to Data struct.
-func dataFrom(payload []byte) (*Data, error) {
+func dataFrom(payload []byte) (Data, error) {
 	if len(payload) != 54 {
-		return nil, fmt.Errorf("unexpected response: expected length 54, got %v",
+		return Data{}, fmt.Errorf("expected response of length 54, got %v",
 			len(payload))
 	}
-	return &Data{
+	return Data{
 		InternalTemperature: intFrom(payload[0:2], true),
 		PV1Voltage:          intFrom(payload[2:4], false),
 		PV2Voltage:          intFrom(payload[4:6], false),

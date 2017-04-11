@@ -42,8 +42,8 @@ func TestDataFromPayload(t *testing.T) {
 	if err != nil {
 		t.Errorf("unexpected error response: %v", err)
 	}
-	if expect != *data {
-		t.Errorf("incorrect data from payload, expected %v, got %v", expect, *data)
+	if expect != data {
+		t.Errorf("incorrect data from payload, expected %v, got %v", expect, data)
 	}
 }
 

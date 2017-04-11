@@ -42,36 +42,36 @@ type Model struct {
 }
 
 // Model requests and returns model and version information.
-func (s *Samil) Model() (*Model, error) {
+func (s *Samil) Model() (Model, error) {
 	err := s.write(model)
 	if err != nil {
-		return nil, err
+		return Model{}, err
 	}
 	payload, err := s.readFor(func(header [3]byte) bool {
 		return header[0] == 1 && header[1] == 0x83
 	})
 	if err != nil {
-		return nil, err
+		return Model{}, err
 	}
 	return modelFrom(payload)
 }
 
 // Converts payload to Model struct.
-func modelFrom(payload []byte) (*Model, error) {
+func modelFrom(payload []byte) (Model, error) {
 	if len(payload) != 71 {
-		return nil,
+		return Model{},
 			fmt.Errorf("unexpected response: expected length 71, got %v",
 				len(payload))
 	}
 	deviceType, err := strconv.Atoi(string(payload[0:1]))
 	if err != nil {
-		return nil, fmt.Errorf("unexpected response: %v", err)
+		return Model{}, fmt.Errorf("unexpected response: %v", err)
 	}
 	general, err := strconv.Atoi(string(payload[70:71]))
 	if err != nil {
-		return nil, fmt.Errorf("unexpected response: %v", err)
+		return Model{}, fmt.Errorf("unexpected response: %v", err)
 	}
-	return &Model{
+	return Model{
 		DeviceType:           deviceType,
 		VARating:             stringFrom(payload[1:7]),
 		FirmwareVersion:      stringFrom(payload[7:12]),
