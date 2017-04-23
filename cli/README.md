@@ -7,7 +7,7 @@ For each inverter found, model info and current generation data is printed once.
 When no new inverters are found after a minute, the application exits.
 
 A binary for 386, amd64 or arm (Raspberry Pi) can be found
-[here](https://github.com/mhvis/samil/releases).
+[here](https://github.com/mhvis/samil/releases/latest).
 
 If you would like to see more useful features in this dumb application,
 e.g. making it scriptable or make it possible to request history data,
