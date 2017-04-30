@@ -6,11 +6,12 @@ import (
 )
 
 // Listens for incoming connections while advertising.
-func connect() (*net.TCPConn, error) {
+// Binds to given interface IP for advertising and listening.
+func connect(interfaceIP net.IP) (*net.TCPConn, error) {
 	done := make(chan *net.TCPConn, 1)
 	fail := make(chan error, 1)
 	go func() {
-		conn, err := listen()
+		conn, err := listen(interfaceIP)
 		if err != nil {
 			fail <- err
 			return
@@ -18,7 +19,7 @@ func connect() (*net.TCPConn, error) {
 		done <- conn
 	}()
 	for {
-		err := advertise()
+		err := advertise(interfaceIP)
 		if err != nil {
 			return nil, err
 		}
@@ -34,9 +35,9 @@ func connect() (*net.TCPConn, error) {
 }
 
 // Listens for incoming connections with a deadline of a minute.
-func listen() (*net.TCPConn, error) {
+func listen(interfaceIP net.IP) (*net.TCPConn, error) {
 	listener, err := net.ListenTCP("tcp4", &net.TCPAddr{
-		IP:   net.IPv4zero,
+		IP:   interfaceIP,
 		Port: 1200,
 	})
 	if err != nil {
@@ -51,8 +52,10 @@ func listen() (*net.TCPConn, error) {
 }
 
 // Advertises the existence of this client.
-func advertise() error {
-	socket, err := net.DialUDP("udp4", nil, &net.UDPAddr{
+func advertise(interfaceIP net.IP) error {
+	socket, err := net.DialUDP("udp4", &net.UDPAddr{
+		IP: interfaceIP,
+	}, &net.UDPAddr{
 		IP:   net.IPv4bcast,
 		Port: 1300,
 	})

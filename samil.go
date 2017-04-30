@@ -29,11 +29,30 @@ type Samil struct {
 // The search will return with an i/o timeout error when no inverter is found
 // after a minute.
 func NewConnection() (*Samil, error) {
-	conn, err := connect()
+	return newConnection(net.IPv4zero)
+}
+
+// NewConnectionWithInterface behaves almost the same as the NewConnection
+// function. The difference is that this function lets you specify the
+// interface IP address that is used to listen on.
+//
+// This can be helpful if the program by default binds to the wrong IP address.
+// In that case, no inverter can be found. It can then help to set the
+// interface IP address to your local network IPv4 address (e.g. 192.168.1.15).
+func NewConnectionWithInterface(interfaceIP net.IP) (*Samil, error) {
+	return newConnection(interfaceIP)
+}
+
+func newConnection(interfaceIP net.IP) (*Samil, error) {
+	conn, err := connect(interfaceIP)
 	if err != nil {
 		return nil, err
 	}
-	s := &Samil{conn, make(chan message, 5), nil}
+	s := &Samil{
+		conn:   conn,
+		in:     make(chan message, 5),
+		closed: nil,
+	}
 	go s.readRoutine()
 	return s, nil
 }

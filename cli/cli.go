@@ -2,6 +2,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"github.com/mhvis/samil"
 	"net"
@@ -9,7 +10,20 @@ import (
 	"time"
 )
 
+var interfaceIPstr = flag.String("interface", "",
+	"the IP address of the network interface used to bind to")
+
 func main() {
+	// Parse command-line flags
+	flag.Parse()
+	interfaceIP := net.IPv4zero
+	if *interfaceIPstr != "" {
+		if interfaceIP = net.ParseIP(*interfaceIPstr); interfaceIP == nil {
+			fmt.Fprintln(os.Stderr, "interface is not a valid textual representation of an IP address")
+			os.Exit(1)
+		}
+	}
+
 	firstRound := true
 	for {
 		if firstRound {
@@ -19,7 +33,7 @@ func main() {
 			fmt.Println("searching for another inverter")
 		}
 
-		inverter, err := samil.NewConnection()
+		inverter, err := samil.NewConnectionWithInterface(interfaceIP)
 		if e, ok := err.(net.Error); ok && e.Timeout() {
 			// Stop application at I/O timeout
 			if firstRound {
