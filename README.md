@@ -2,6 +2,8 @@
 
 Go library and command-line interface for Samil Power inverters.
 
+A more up-to-date Python version is [here](https://github.com/mhvis/solar/).
+
 [![GoDoc](https://godoc.org/github.com/mhvis/samil?status.svg)](https://godoc.org/github.com/mhvis/samil)
 [![Go Report Card](https://goreportcard.com/badge/github.com/mhvis/samil)](https://goreportcard.com/report/github.com/mhvis/samil)
 
@@ -33,4 +35,4 @@ See [GoDoc](https://godoc.org/github.com/mhvis/samil).
 MIT
 
 ## Background information
-[Communication protocol](https://github.com/mhvis/solar/wiki/Communication-protocol)
+[Communication protocol](https://mhvis.github.io/solar/)
